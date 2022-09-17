@@ -1,6 +1,8 @@
 package com.example.kalista.controllers;
 
+import com.example.kalista.models.dtos.MessageDto;
 import com.example.kalista.models.dtos.UserDto;
+import com.example.kalista.models.entities.Message;
 import com.example.kalista.models.entities.User;
 import com.example.kalista.services.UserService;
 import org.modelmapper.ModelMapper;
@@ -47,11 +49,36 @@ public class UserController {
         return new ResponseEntity(userDto, HttpStatus.OK);
     }
 
+    @GetMapping("/{user_id}/messages")
+    public ResponseEntity<HttpStatus> findAllMessagesByUser(
+            @PathVariable(name = "user_id") String userId
+    ) {
+        List<Message> messages = this.userService.findAllMessagesByUser(userId);
+        List<MessageDto> messageDtos = new ArrayList();
+
+        for(Message message : messages)
+            messageDtos.add(this.modelMapper.map(message, MessageDto.class));
+
+        return new ResponseEntity(messageDtos, HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<HttpStatus> createUser(@RequestBody UserDto userDto) {
         User user = this.modelMapper.map(userDto, User.class);
 
         this.userService.createUser(user);
+
+        return new ResponseEntity(HttpStatus.CREATED);
+    }
+
+    @PostMapping("/{user_id}/messages")
+    public ResponseEntity<HttpStatus> createMessageByUser(
+            @PathVariable(name = "user_id") String userId,
+            @RequestBody MessageDto messageDto
+    ) {
+        Message message = this.modelMapper.map(messageDto, Message.class);
+
+        this.userService.createMessageByUser(userId, message);
 
         return new ResponseEntity(HttpStatus.CREATED);
     }
@@ -73,5 +100,13 @@ public class UserController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @DeleteMapping("/{user_id}/messages/{message_id}")
+    public ResponseEntity<HttpStatus> removeMessageByUser(
+            @PathVariable(name = "user_id") String userId,
+            @PathVariable(name = "message_id") Integer messageId
+    ) {
+        this.userService.removeMessageByUser(userId, messageId);
 
+        return new ResponseEntity(HttpStatus.OK);
+    }
 }

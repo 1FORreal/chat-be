@@ -28,13 +28,27 @@ public class MessageController {
         this.modelMapper = modelMapper;
     }
 
-    @GetMapping
+    /*@GetMapping
     public ResponseEntity<HttpStatus> findAllMessages() {
         List<Message> messages = this.messageService.findAllMessages();
         List<MessageDto> messageDtos = new ArrayList<>();
 
         for(Message message : messages)
             messageDtos.add(this.modelMapper.map(message, MessageDto.class));
+
+        return new ResponseEntity(messageDtos, HttpStatus.OK);
+    }*/
+
+    @GetMapping
+    public ResponseEntity<HttpStatus> findAllMessagesPaginated(
+            @RequestParam(name = "page_number") Integer pageNumber,
+            @RequestParam(name = "page_size") Integer pageSize
+    ) {
+        List<Message> messages = this.messageService.findAllMessagesPaginated(pageNumber, pageSize);
+        List<MessageDto> messageDtos = new ArrayList();
+
+        for(Message message : messages)
+            messageDtos.add(this.modelMapper.map(message,MessageDto.class));
 
         return new ResponseEntity(messageDtos, HttpStatus.OK);
     }
@@ -68,6 +82,13 @@ public class MessageController {
     @DeleteMapping("/{message_id}")
     public ResponseEntity<HttpStatus> removeMessageById(@PathVariable(name = "message_id") Integer messageId) {
         this.messageService.removeMessageById(messageId);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<HttpStatus> removeAllMessages(){
+        this.messageService.removeAllMessages();
 
         return new ResponseEntity(HttpStatus.OK);
     }
