@@ -13,11 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/messages")
 public class MessageController {
 
     private final MessageService messageService;
     private final ModelMapper modelMapper;
+    private static int i = 0;
 
     @Autowired
     public MessageController(
@@ -47,8 +49,10 @@ public class MessageController {
         List<Message> messages = this.messageService.findAllMessagesPaginated(pageNumber, pageSize);
         List<MessageDto> messageDtos = new ArrayList();
 
+        System.out.println(++i);
+
         for(Message message : messages)
-            messageDtos.add(this.modelMapper.map(message,MessageDto.class));
+            messageDtos.add(this.modelMapper.map(message, MessageDto.class));
 
         return new ResponseEntity(messageDtos, HttpStatus.OK);
     }

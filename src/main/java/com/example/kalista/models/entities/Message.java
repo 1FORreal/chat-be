@@ -1,6 +1,9 @@
 package com.example.kalista.models.entities;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "messages")
@@ -16,6 +19,11 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "create_date")
+    private Date creationDate;
 
     public Integer getId() {
         return id;
@@ -39,5 +47,13 @@ public class Message {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 }

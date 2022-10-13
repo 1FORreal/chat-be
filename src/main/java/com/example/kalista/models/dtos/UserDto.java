@@ -1,17 +1,20 @@
 package com.example.kalista.models.dtos;
 
-import com.example.kalista.models.entities.Message;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
 public class UserDto {
     private String id;
     private String username;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @JsonIgnoreProperties(value = "user")
-    private List<Message> messages;
+    //@JsonIgnoreProperties(value = "user")
+    @JsonIgnore
+    private List<MessageDto> messages;
 
     public String getId() {
         return id;
@@ -37,11 +40,11 @@ public class UserDto {
         this.password = password;
     }
 
-    public List<Message> getMessages() {
+    public List<MessageDto> getMessages() {
         return messages;
     }
 
-    public void setMessages(List<Message> messages) {
+    public void setMessages(List<MessageDto> messages) {
         this.messages = messages;
     }
 }

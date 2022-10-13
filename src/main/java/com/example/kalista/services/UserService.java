@@ -7,21 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
-    private final MessageService messageService;
 
     @Autowired
     public UserService(
-            UserRepository userRepository,
-            MessageService messageService) {
+            UserRepository userRepository
+    ) {
         this.userRepository = userRepository;
-        this.messageService = messageService;
     }
-
 
     public List<User> findAllUsers() {
         return this.userRepository.findAll();
@@ -41,16 +39,13 @@ public class UserService {
         this.userRepository.save(user);
     }
 
-    public void createMessageByUser(String userId, Message message) {
-        User user = this.findUserById(userId);
+    public User authenticateUser(String username, String password) {
+        Optional<User> optionalUser = this.userRepository.findUserByUsername(username);
 
-        List<Message> userMessages = user.getMessages();
-        userMessages.add(message);
-        user.setMessages(userMessages);
+        if(!optionalUser.isPresent()) throw new RuntimeException("Incorrect credentials!");
+        if(!optionalUser.get().getPassword().equals(password)) throw new RuntimeException("Incorrect credentials");
 
-        message.setUser(user);
-
-        this.messageService.createMessage(message);
+        return optionalUser.get();
     }
 
     public void updateUser(User user) {
@@ -61,11 +56,9 @@ public class UserService {
         this.userRepository.deleteById(userId);
     }
 
-    public void removeMessageByUser(String userId, Integer messageId) {
-        Message message = this.messageService.findMessageById(messageId);
+    public boolean userExistsById(String userId) {
+        User user = this.findUserById(userId);
 
-        if(!message.getUser().getId().equals(userId)) return;
-
-        this.messageService.removeMessageById(messageId);
+        return (user != null ? true : false);
     }
 }
